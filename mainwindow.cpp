@@ -36,6 +36,14 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
     }
 }
 
+void MainWindow::setClientType(int clientType) {
+    this->clientType = clientType;
+}
+
+int MainWindow::getClientType() {
+    return this->clientType;
+}
+
 MainWindow::~MainWindow()
 {
     delete ui;

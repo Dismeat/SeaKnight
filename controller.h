@@ -7,15 +7,26 @@
 #include "ui_mainwindow.h"
 #include "qpainter.h"
 
-const int FIRST_LINE_OFFSET = 70;
+const int FIRST_LINE_OFFSET = 100;
 const int SCREEN_DIM = 300;
+const int LINE_STEP = SCREEN_DIM / 10;
 
-class Controller
-{
+const int FIRST_FIELD_OFSSET = 20;
+const int SECOND_FIELD_OFFSET = 380;
+
+enum TURNS {
+    PLACE_SHIPS,
+    MY_TURN,
+    ENIMIE_TURN,
+};
+
+class Controller {
 public:
     Controller(QWidget *window);
+    void drawField(QPainter &painter, int xOffset);
 
     void renderScreen(QPainter &painter);
+    void drawShipCell(QPainter *painter, int x, int y);
 
 private:
     QWidget *window;
