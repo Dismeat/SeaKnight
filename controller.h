@@ -7,12 +7,19 @@
 #include "ui_mainwindow.h"
 #include "qpainter.h"
 
+#include "battlefield.h";
+
 const int FIRST_LINE_OFFSET = 100;
 const int SCREEN_DIM = 300;
 const int LINE_STEP = SCREEN_DIM / 10;
 
 const int FIRST_FIELD_OFSSET = 20;
 const int SECOND_FIELD_OFFSET = 380;
+
+enum FIELDS {
+    FIRST_FIELD,
+    SECOND_FIELD,
+};
 
 enum TURNS {
     PLACE_SHIPS,
@@ -23,14 +30,29 @@ enum TURNS {
 class Controller {
 public:
     Controller(QWidget *window);
-    void drawField(QPainter &painter, int xOffset);
 
+    void drawField(QPainter &painter, int xOffset);
+    void drawCells(QPainter *painter, int fieldType);
+    void drawShipCell(QPainter *painter, QColor color, int xOffset, int yOffset, int x, int y);
+    void drawMissCell(QPainter *painter, int xOffset, int yOffset, int x, int y);
     void renderScreen(QPainter &painter);
-    void drawShipCell(QPainter *painter, int x, int y);
+
+    void detectClickField(QPoint pos);
+    QPoint parseClickFieldCoordinates(int fieldType, int x, int y);
+
+    // from FIELDS enum parameter
+    BattleField* getField(int fieldType);
+    int getFieldXOffset(int fieldType);
+
+    void placeToCell(int fieldType, int cellType, QPoint cell);
 
 private:
     QWidget *window;
 
+    int currentGameStatus;
+
+    BattleField *myShips;
+    BattleField *enemyShips;
 };
 
 #endif // CONTROLLER_H

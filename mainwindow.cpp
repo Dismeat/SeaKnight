@@ -16,7 +16,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     this->controller = new Controller(this);
-
     this->repaint();
 }
 
@@ -28,11 +27,11 @@ void MainWindow::paintEvent( QPaintEvent* event ) {
     this->controller->renderScreen(painter);
 }
 
-void MainWindow::mouseMoveEvent(QMouseEvent *event)
+void MainWindow::mousePressEvent(QMouseEvent *event)
 {
     if(event->button() == Qt::LeftButton)
     {
-        qDebug() << "Left mouse click!" << endl;
+        controller->detectClickField(event->pos());
     }
 }
 
