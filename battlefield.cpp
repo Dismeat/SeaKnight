@@ -1,4 +1,5 @@
 #include "battlefield.h"
+#include "QDebug"
 
 BattleField::BattleField() {
     this->battleField = new int*[BATTLE_SIZE];
@@ -25,6 +26,18 @@ int BattleField::getCell(int x, int y) {
     return this->battleField[x][y];
 }
 
+bool BattleField::checkPlaced(int cellType) {
+    int shipsCellsCounter = 0;
+    for (int i = 0; i < BATTLE_SIZE; i++) {
+        for (int j = 0; j < BATTLE_SIZE; j++) {
+            if (this->battleField[i][j] == cellType) {
+                shipsCellsCounter++;
+            }
+        }
+    }
+
+    return (shipsCellsCounter == SHIPS_CELLS_TO_START);
+}
 
 BattleField::~BattleField() {
     for (int i = 0; i < BATTLE_SIZE; i++) {

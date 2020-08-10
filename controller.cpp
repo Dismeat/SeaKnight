@@ -4,21 +4,21 @@
 #include "QDebug"
 #include "QMouseEvent"
 #include "QLine"
+#include "QMessageBox"
 #include "QPointF"
+#include "QString"
 
 #include <iostream>
 
-Controller::Controller(QWidget *window)
+Controller::Controller(QWidget *window, Ui::MainWindow *ui)
 {
     this->window = window;
+    this->ui = ui;
 
     this->myShips = new BattleField();
     this->enemyShips = new BattleField();
 
     this->currentGameStatus = PLACE_SHIPS;
-    this->myShips->getField()[3][3] = CELL_SHIP;
-    this->myShips->getField()[5][5] = CELL_MISS;
-    this->enemyShips->getField()[3][3] = CELL_DAMAGED;
 }
 
 int Controller::getFieldXOffset(int fieldType) {
@@ -187,6 +187,34 @@ void Controller::drawField(QPainter &painter, int xOffset) {
 
     this->drawCells(&painter, FIRST_FIELD);
     this->drawCells(&painter, SECOND_FIELD);
+}
+
+void Controller::readyBtnClicked() {
+    if (this->currentGameStatus == PLACE_SHIPS) {
+        if (this->myShips->checkPlaced(CELL_SHIP)) {
+            this->showInfoMessage(QString("Корабли растановлены правильно!"),
+                                  QString("Начинаем игру")
+                                  );
+
+            this->ui->infoLabel->setText("Ждем соперника!");
+            this->ui->readyBtn->setDisabled(true);
+
+            return;
+        }
+        this->showInfoMessage(QString("Ошибка!"),
+                              QString("Неправильно раставлены корабли")
+                              );
+        return;
+    }
+}
+
+void Controller::showInfoMessage(QString messageTitle, QString messageContent) {
+    QMessageBox msgBox;
+    msgBox.setText(messageTitle);
+    msgBox.setInformativeText(messageContent);
+    msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Cancel);
+    msgBox.exec();
 }
 
 void Controller::renderScreen(QPainter &painter) {

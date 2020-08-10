@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    this->controller = new Controller(this);
+    this->controller = new Controller(this, ui);
     this->repaint();
 }
 
@@ -48,3 +48,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::on_readyBtn_clicked()
+{
+    this->controller->readyBtnClicked();
+}

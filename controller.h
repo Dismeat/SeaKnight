@@ -29,7 +29,7 @@ enum TURNS {
 
 class Controller {
 public:
-    Controller(QWidget *window);
+    Controller(QWidget *window, Ui::MainWindow *ui);
 
     void drawField(QPainter &painter, int xOffset);
     void drawCells(QPainter *painter, int fieldType);
@@ -39,6 +39,8 @@ public:
 
     void detectClickField(QPoint pos);
     QPoint parseClickFieldCoordinates(int fieldType, int x, int y);
+    void readyBtnClicked();
+    void showInfoMessage(QString messageTitle, QString messageContent);
 
     // from FIELDS enum parameter
     BattleField* getField(int fieldType);
@@ -48,6 +50,7 @@ public:
 
 private:
     QWidget *window;
+    Ui::MainWindow *ui;
 
     int currentGameStatus;
 

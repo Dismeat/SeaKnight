@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "ui_mainwindow.h"
 
 #include "controller.h"
 class Controller;
@@ -29,9 +30,12 @@ protected:
     void paintEvent( QPaintEvent* event );
     void mousePressEvent(QMouseEvent *event);
 
+private slots:
+    void on_readyBtn_clicked();
+
 private:
     Controller *controller;
-    Ui::MainWindow *ui;\
+    Ui::MainWindow *ui;
 
     // Client type HOST/CLIENT only
     int clientType;
