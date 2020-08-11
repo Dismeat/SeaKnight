@@ -52,6 +52,8 @@ public:
 
     void onDataRecieved(QByteArray data) override;
 
+    void startGameIfNeed();
+    void setGameStatus(int gameStatus);
 private:
     QWidget *window;
     Ui::MainWindow *ui;
@@ -63,6 +65,9 @@ private:
 
     // Client type HOST/CLIENT only
     int clientType;
+
+    bool shipsReady = false;
+    bool oponentReady = false;
 };
 
 #endif // CONTROLLER_H

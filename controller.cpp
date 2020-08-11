@@ -20,6 +20,7 @@ Controller::Controller(QWidget *window, Ui::MainWindow *ui, int client) : Networ
     this->enemyShips = new BattleField();
 
     this->currentGameStatus = PLACE_SHIPS;
+    this->shipsReady = false;
 
     if (this->clientType == HOST) {
         this->startServer();
@@ -157,6 +158,27 @@ BattleField* Controller::getField(int fieldType) {
     return nullptr;
 }
 
+void Controller::setGameStatus(int gameStatus) {
+    this->currentGameStatus = gameStatus;
+
+    if (currentGameStatus == MY_TURN) {
+        this->ui->infoLabel->setText("Сделайте свой ход!");
+        return;
+    }
+    this->ui->infoLabel->setText("Ждем пока походит противник");
+}
+
+void Controller::startGameIfNeed() {
+    if (this->shipsReady && this->oponentReady) {
+        if (this->clientType == HOST) {
+            this->setGameStatus(MY_TURN);
+            return;
+        }
+
+        this->setGameStatus(ENIMIE_TURN);
+    }
+}
+
 void Controller::drawField(QPainter &painter, int xOffset) {
     int currentLineStart = 0;
     painter.setPen(Qt::black);
@@ -202,11 +224,16 @@ void Controller::readyBtnClicked() {
             this->showInfoMessage(QString("Корабли растановлены правильно!"),
                                   QString("Начинаем игру")
                                   );
+
             char ready[] = "ready";
             this->send(ready);
+
+            this->shipsReady = true;
             this->ui->infoLabel->setText("Ждем соперника!");
             this->ui->readyBtn->setDisabled(true);
 
+            // start game if opponent ready or wait them
+            this->startGameIfNeed();
             return;
         }
         this->showInfoMessage(QString("Ошибка!"),
@@ -227,8 +254,8 @@ void Controller::showInfoMessage(QString messageTitle, QString messageContent) {
 
 void Controller::onDataRecieved(QByteArray data) {
    if (data == QByteArray("ready")) {
-        qDebug("ready worked");
-        this->currentGameStatus = this->clientType == HOST ? MY_TURN : ENIMIE_TURN;
+        this->oponentReady = true;
+        this->startGameIfNeed();
    }
 }
 
