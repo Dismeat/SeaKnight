@@ -54,6 +54,8 @@ public:
 
     void startGameIfNeed();
     void setGameStatus(int gameStatus);
+    void flipTurn();
+
 private:
     QWidget *window;
     Ui::MainWindow *ui;

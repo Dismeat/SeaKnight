@@ -22,7 +22,7 @@ public:
     void startClient();
 
     QTcpSocket *getSocketToSend();
-    void send(char *message);
+    void send(QString *message);
     virtual void onDataRecieved(QByteArray data) = 0;
 
 public slots:

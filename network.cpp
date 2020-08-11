@@ -65,11 +65,9 @@ QTcpSocket* Network::getSocketToSend() {
     return this->mySocket;
 }
 
-void Network::send(char *message) {
-    qDebug() << "sending ready" << Qt::endl;
+void Network::send(QString *message) {
     QTcpSocket *socket = this->getSocketToSend();
-    qDebug() << "socket" << socket;
-    socket->write("ready");
+    socket->write(message->toLocal8Bit());
 }
 
 void Network::clientSockDisconnected() {

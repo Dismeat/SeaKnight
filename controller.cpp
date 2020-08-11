@@ -7,8 +7,10 @@
 #include "QMessageBox"
 #include "QPointF"
 #include "QString"
+#include "controller.h"
 
 #include <iostream>
+#include <stdio.h>
 
 Controller::Controller(QWidget *window, Ui::MainWindow *ui, int client) : Network(client)
 {
@@ -112,11 +114,10 @@ QPoint Controller::parseClickFieldCoordinates(int fieldType, int x, int y) {
 void Controller::detectClickField(QPoint pos) {
     int x = pos.x();
     int y = pos.y();
-    if (
-            (x >= FIRST_FIELD_OFSSET) &&
-            (x <= FIRST_FIELD_OFSSET + SCREEN_DIM) &&
-            (y >= FIRST_LINE_OFFSET) &&
-            (y <= FIRST_LINE_OFFSET + SCREEN_DIM)
+    if ((x >= FIRST_FIELD_OFSSET) &&
+        (x <= FIRST_FIELD_OFSSET + SCREEN_DIM) &&
+        (y >= FIRST_LINE_OFFSET) &&
+        (y <= FIRST_LINE_OFFSET + SCREEN_DIM)
        ) {
 
         // if placing ships on the game start
@@ -137,13 +138,17 @@ void Controller::detectClickField(QPoint pos) {
         }
     }
 
-    if (
-            (x >= SECOND_FIELD_OFFSET) &&
-            (x <= SECOND_FIELD_OFFSET + SCREEN_DIM) &&
-            (y >= FIRST_LINE_OFFSET) &&
-            (y <= FIRST_LINE_OFFSET + SCREEN_DIM)
+    if ((x >= SECOND_FIELD_OFFSET) &&
+        (x <= SECOND_FIELD_OFFSET + SCREEN_DIM) &&
+        (y >= FIRST_LINE_OFFSET) &&
+        (y <= FIRST_LINE_OFFSET + SCREEN_DIM)
        ) {
-        qDebug() << "enemy ships";
+        if (this->currentGameStatus == MY_TURN) {
+            QPoint coords = this->parseClickFieldCoordinates(SECOND_FIELD, x, y);
+
+            QString message = QString("%1|%2|%3").arg(coords.x()).arg(coords.y()).arg("F");
+            this->send(&message);
+        }
     }
 }
 
@@ -225,7 +230,7 @@ void Controller::readyBtnClicked() {
                                   QString("Начинаем игру")
                                   );
 
-            char ready[] = "ready";
+            QString *ready = new QString("ready");
             this->send(ready);
 
             this->shipsReady = true;
@@ -253,10 +258,67 @@ void Controller::showInfoMessage(QString messageTitle, QString messageContent) {
 }
 
 void Controller::onDataRecieved(QByteArray data) {
-   if (data == QByteArray("ready")) {
+   QString result = QString(data);
+   if (result == "ready") {
         this->oponentReady = true;
         this->startGameIfNeed();
    }
+   // p|p|c - command format
+   if (result.size() == 5) {
+        int pos1 = result.at(0).unicode() - 48;
+        int pos2 = result.at(2).unicode() - 48;
+        char command = result.at(4).unicode();
+        qDebug() << pos1 << pos2 << command << Qt::endl;
+
+        // taking fire
+        if (command == 'F') {
+            int cell = this->myShips->getCell(pos1, pos2);
+            QString message;
+            switch(cell) {
+                case CELL_SHIP:
+                    message = QString("%1|%2|%3").arg(pos1).arg(pos2).arg("D");
+                    this->placeToCell(FIRST_FIELD, CELL_DAMAGED, QPoint(pos1, pos2));
+                    break;
+                case CELL_NONE:
+                case CELL_MISS:
+                    message = QString("%1|%2|%3").arg(pos1).arg(pos2).arg("M");
+                    this->placeToCell(FIRST_FIELD, CELL_MISS, QPoint(pos1, pos2));
+                    this->flipTurn();
+                break;
+            }
+            this->send(&message);
+        }
+
+        // place cells to enemy field
+        if (command == 'D' || command == 'M') {
+            int currentCellType = command == 'D' ? CELL_DAMAGED : CELL_MISS;
+            this->placeToCell(SECOND_FIELD, currentCellType, QPoint(pos1, pos2));
+
+            if (command == 'M') {
+                this->flipTurn();
+            }
+        }
+
+        if (this->myShips->checkPlaced(CELL_DAMAGED)) {
+            // game end
+            this->showInfoMessage("Вы проиграли!", "Вы проиграли попробуйте сыграть еще раунд!");
+        }
+        if (this->enemyShips->checkPlaced(CELL_DAMAGED)) {
+            // game end
+            this->showInfoMessage("Вы выиграли!", "Ура, вы выиграли!");
+        }
+
+   }
+}
+
+void Controller::flipTurn() {
+    if (this->currentGameStatus == MY_TURN) {
+        this->currentGameStatus = ENIMIE_TURN;
+        this->ui->infoLabel->setText("Ждем пока противник походит!");
+    } else {
+        this->currentGameStatus = MY_TURN;
+        this->ui->infoLabel->setText("Сделайте свой ход!");
+    }
 }
 
 void Controller::renderScreen(QPainter &painter) {
