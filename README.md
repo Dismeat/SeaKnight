@@ -9,4 +9,5 @@ networking.cpp - общение с помощью сокетов
 controller.cpp - управление всей игрой
 battlefield.cpp - игровое поле игры
 mainwindow.cpp - окно игры
+scorelogger.cpp - учет победителей в файл score.txt (Реализован паттерн синглтон)
 ```

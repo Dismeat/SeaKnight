@@ -20,13 +20,15 @@ SOURCES += \
     controller.cpp \
     main.cpp \
     mainwindow.cpp \
-    network.cpp
+    network.cpp \
+    scorelogger.cpp
 
 HEADERS += \
     battlefield.h \
     controller.h \
     mainwindow.h \
-    network.h
+    network.h \
+    scorelogger.h
 
 FORMS += \
     mainwindow.ui

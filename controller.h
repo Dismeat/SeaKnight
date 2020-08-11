@@ -7,8 +7,8 @@
 #include "ui_mainwindow.h"
 #include "qpainter.h"
 
-#include "battlefield.h";
-#include "network.h";
+#include "battlefield.h"
+#include "network.h"
 
 const int FIRST_LINE_OFFSET = 100;
 const int SCREEN_DIM = 300;

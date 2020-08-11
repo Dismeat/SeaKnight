@@ -9,6 +9,8 @@
 #include "QString"
 #include "controller.h"
 
+#include "scorelogger.h"
+
 #include <iostream>
 #include <stdio.h>
 
@@ -307,6 +309,8 @@ void Controller::onDataRecieved(QByteArray data) {
         if (this->enemyShips->checkPlaced(CELL_DAMAGED)) {
             // game end
             this->showInfoMessage("Вы выиграли!", "Ура, вы выиграли!");
+
+            ScoreLogger::GetInstance()->writeScore(this->clientType);
         }
 
    }
