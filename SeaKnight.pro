@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core network gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -19,12 +19,14 @@ SOURCES += \
     battlefield.cpp \
     controller.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    network.cpp
 
 HEADERS += \
     battlefield.h \
     controller.h \
-    mainwindow.h
+    mainwindow.h \
+    network.h
 
 FORMS += \
     mainwindow.ui
