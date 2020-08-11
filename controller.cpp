@@ -263,6 +263,7 @@ void Controller::onDataRecieved(QByteArray data) {
         this->oponentReady = true;
         this->startGameIfNeed();
    }
+
    // p|p|c - command format
    if (result.size() == 5) {
         int pos1 = result.at(0).unicode() - 48;
