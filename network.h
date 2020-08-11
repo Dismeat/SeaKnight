@@ -9,14 +9,21 @@
 const int PORT = 33333;
 const QString HOST_ADDR = "127.0.0.1";
 
+const int HOST_TYPE = 0;
+const int CLIENT_TYPE = 1;
+
 class Network : public QObject
 {
     Q_OBJECT
 public:
-    Network();
+    Network(int clientType);
 
     void startServer();
     void startClient();
+
+    QTcpSocket *getSocketToSend();
+    void send(char *message);
+    virtual void onDataRecieved(QByteArray data) = 0;
 
 public slots:
     // for server slots
@@ -35,6 +42,9 @@ private:
 
     // for client
     QTcpSocket *mySocket;
+
+    // server or host
+    int clientType;
 };
 
 #endif // SERVER_H

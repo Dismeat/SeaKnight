@@ -9,7 +9,7 @@ class Controller;
 
 enum {
   HOST,
-    CLIENT,
+  CLIENT,
 };
 
 QT_BEGIN_NAMESPACE
@@ -20,7 +20,7 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow(QWidget *parent = nullptr, int client=HOST);
     ~MainWindow();
 
     void setClientType(int clientType);

@@ -3,9 +3,9 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 
-Network::Network()
+Network::Network(int clientType)
 {
-
+    this->clientType = clientType;
 }
 
 // for server
@@ -17,7 +17,7 @@ void Network::startServer() {
         return;
     }
 
-    qDebug() << tcpServer->isListening() << "TCPSocket listen on port 33333";
+    qDebug() << "TCPSocket listen on port 33333";
     qDebug() << QString::fromUtf8("Сервер запущен!");
 }
 
@@ -32,6 +32,9 @@ void Network::userConnected()
 }
 
 void Network::socketRead() {
+    QByteArray data = clientSocket->readAll();
+    qDebug() << "from client: " << data << Qt::endl;
+    this->onDataRecieved(data);
 }
 
 void Network::clientDisconected() {
@@ -41,7 +44,7 @@ void Network::clientDisconected() {
 
 // for client
 void Network::startClient() {
-    mySocket = new QTcpSocket();
+    mySocket = new QTcpSocket(this);
     mySocket->connectToHost(HOST_ADDR, PORT);
     qDebug() << "connected to server" << Qt::endl;
 
@@ -51,7 +54,22 @@ void Network::startClient() {
 
 void Network::clientSockReady() {
     QByteArray data = mySocket->readAll();
-    qDebug() << data << Qt::endl;
+    qDebug() << "from server: " << data << Qt::endl;
+    this->onDataRecieved(data);
+}
+
+QTcpSocket* Network::getSocketToSend() {
+    if (this->clientType == HOST_TYPE) {
+       return this->clientSocket;
+    }
+    return this->mySocket;
+}
+
+void Network::send(char *message) {
+    qDebug() << "sending ready" << Qt::endl;
+    QTcpSocket *socket = this->getSocketToSend();
+    qDebug() << "socket" << socket;
+    socket->write("ready");
 }
 
 void Network::clientSockDisconnected() {

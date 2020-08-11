@@ -10,15 +10,22 @@
 
 #include <iostream>
 
-Controller::Controller(QWidget *window, Ui::MainWindow *ui)
+Controller::Controller(QWidget *window, Ui::MainWindow *ui, int client) : Network(client)
 {
     this->window = window;
     this->ui = ui;
+    this->clientType = client;
 
     this->myShips = new BattleField();
     this->enemyShips = new BattleField();
 
     this->currentGameStatus = PLACE_SHIPS;
+
+    if (this->clientType == HOST) {
+        this->startServer();
+    } else {
+        this->startClient();
+    }
 }
 
 int Controller::getFieldXOffset(int fieldType) {
@@ -195,7 +202,8 @@ void Controller::readyBtnClicked() {
             this->showInfoMessage(QString("Корабли растановлены правильно!"),
                                   QString("Начинаем игру")
                                   );
-
+            char ready[] = "ready";
+            this->send(ready);
             this->ui->infoLabel->setText("Ждем соперника!");
             this->ui->readyBtn->setDisabled(true);
 
@@ -215,6 +223,13 @@ void Controller::showInfoMessage(QString messageTitle, QString messageContent) {
     msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
     msgBox.setDefaultButton(QMessageBox::Cancel);
     msgBox.exec();
+}
+
+void Controller::onDataRecieved(QByteArray data) {
+   if (data == QByteArray("ready")) {
+        qDebug("ready worked");
+        this->currentGameStatus = this->clientType == HOST ? MY_TURN : ENIMIE_TURN;
+   }
 }
 
 void Controller::renderScreen(QPainter &painter) {

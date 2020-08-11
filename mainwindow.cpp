@@ -9,13 +9,13 @@
 
 #include <iostream>
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(QWidget *parent, int client)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
-    this->controller = new Controller(this, ui);
+    this->controller = new Controller(this, ui, client);
     this->repaint();
 }
 

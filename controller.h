@@ -8,6 +8,7 @@
 #include "qpainter.h"
 
 #include "battlefield.h";
+#include "network.h";
 
 const int FIRST_LINE_OFFSET = 100;
 const int SCREEN_DIM = 300;
@@ -27,9 +28,10 @@ enum TURNS {
     ENIMIE_TURN,
 };
 
-class Controller {
+class Controller : public Network{
+    Q_OBJECT
 public:
-    Controller(QWidget *window, Ui::MainWindow *ui);
+    Controller(QWidget *window, Ui::MainWindow *ui, int client);
 
     void drawField(QPainter &painter, int xOffset);
     void drawCells(QPainter *painter, int fieldType);
@@ -48,6 +50,8 @@ public:
 
     void placeToCell(int fieldType, int cellType, QPoint cell);
 
+    void onDataRecieved(QByteArray data) override;
+
 private:
     QWidget *window;
     Ui::MainWindow *ui;
@@ -56,6 +60,9 @@ private:
 
     BattleField *myShips;
     BattleField *enemyShips;
+
+    // Client type HOST/CLIENT only
+    int clientType;
 };
 
 #endif // CONTROLLER_H
